@@ -1,0 +1,59 @@
+version: '3.8'
+# Tells Docker Compose which version of the config format to use
+
+services:
+# Defines all the containers you want to run
+
+  ollama:
+    # Container #1: The Ollama AI model server
+    image: ollama/ollama:latest
+    # Downloads this pre-built image from Docker Hub
+    
+    container_name: ollama
+    # Names the container "ollama" (instead of random name)
+    
+    ports:
+      - "11434:11434"
+    # Maps port 11434 on your computer to port 11434 in container
+    # So your Python script can reach Ollama at localhost:11434
+    
+    volumes:
+      - ollama_data:/root/.ollama
+    # Saves Ollama's models permanently on your computer
+    # Without this, models would be deleted when container stops
+    
+    restart: unless-stopped
+    # Automatically restarts container if it crashes
+
+  pdf-processor:
+    # Container #2: Your Python application
+    build: .
+    # Builds an image from your Dockerfile (in current directory)
+    
+    container_name: pdf-processor
+    # Names it "pdf-processor"
+    
+    volumes:
+      - ./pdfs:/app/pdfs
+      # Maps your local ./pdfs folder to /app/pdfs in container
+      # You put PDFs here on your computer, container can read them
+      
+      - ./output:/app/output
+      # Maps your local ./output folder to /app/output in container
+      # Container writes JSON here, you can see it on your computer
+    
+    depends_on:
+      - ollama
+    # Waits for Ollama container to start first
+    
+    environment:
+      - OLLAMA_HOST=http://ollama:11434
+    # Sets environment variable so Python knows where Ollama is
+    # Uses "ollama" (container name) instead of "localhost"
+    
+    command: tail -f /dev/null
+    # Keeps container running (otherwise it would stop immediately)
+
+volumes:
+  ollama_data:
+  # Creates a persistent storage area for Ollama's models
