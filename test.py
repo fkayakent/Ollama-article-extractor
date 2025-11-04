@@ -67,22 +67,22 @@ def main():
     
     for pdf_path in pdf_files:
         pdf_name = os.path.basename(pdf_path)
-        print(f"\n📄 Processing: {pdf_name}")
+        print(f"\n Processing: {pdf_name}")
         
         # Read PDF
         text = read_pdf(pdf_path)
         if not text:
-            print(f"❌ Skipping {pdf_name} - couldn't read file")
+            print(f"Skipping {pdf_name} - couldn't read file")
             continue
         
         print(f"✓ Read {len(text)} characters")
         
         # Extract info using Ollama
-        print("🤖 Extracting information with Ollama...")
+        print("Extracting information with Ollama...")
         result = extract_info_with_ollama(text)
         
         if not result:
-            print(f"❌ Skipping {pdf_name} - Ollama error")
+            print(f"Skipping {pdf_name} - Ollama error")
             continue
         
         # Parse JSON
@@ -109,7 +109,7 @@ def main():
             all_results.append(article_info)
             
         except Exception as e:
-            print(f"❌ Error parsing JSON for {pdf_name}: {e}")
+            print(f"Error parsing JSON for {pdf_name}: {e}")
             print(f"Raw response: {result[:200]}...")
             continue
     
@@ -120,12 +120,12 @@ def main():
             json.dump(all_results, f, indent=2, ensure_ascii=False)
         
         print("\n" + "=" * 50)
-        print(f"✅ Successfully processed {len(all_results)} article(s)")
-        print(f"📁 Individual files saved in: /app/output/")
-        print(f"📁 Combined file: all_articles.json")
+        print(f"Successfully processed {len(all_results)} article(s)")
+        print(f"Individual files saved in: /app/output/")
+        print(f"Combined file: all_articles.json")
         print("=" * 50)
     else:
-        print("\n❌ No articles were successfully processed")
+        print("\n No articles were successfully processed")
 
 if __name__ == "__main__":
     main()
